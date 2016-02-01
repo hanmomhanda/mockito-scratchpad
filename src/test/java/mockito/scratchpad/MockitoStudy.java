@@ -65,4 +65,20 @@ public class MockitoStudy {
         verify(mockedList).get(0);
         verify(mockedList).get(1);
     }
+
+    @Test
+    public void t05_null_when_not_mocked() throws Exception {
+        // stubbing
+        when(mockedList.get(0)).thenReturn("first");
+
+        System.out.println(mockedList.get(0));
+
+        // when-thenReturn으로 stubbing 되지 않으면 null 반환
+        System.out.println(mockedList.get(999));
+
+        verify(mockedList).get(0);
+        // 호출 내용이 stubbing 되지는 않았지만
+        // mockedList는 mock 된 객체이므로 행위자체는 기록되어 verify 성공
+        verify(mockedList).get(999);
+    }
 }
