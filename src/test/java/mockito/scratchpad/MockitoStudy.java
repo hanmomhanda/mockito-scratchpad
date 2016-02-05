@@ -2,9 +2,13 @@ package mockito.scratchpad;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -12,15 +16,17 @@ import static org.mockito.Mockito.*;
 /**
  * Created by hanmomhanda on 2016-01-31.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class MockitoStudy {
 
     @Mock
     List mockedList;
 
-    @Before
-    public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
+    // @RunWith(MockitoJUnitRunner.class) 애노테이션 해주면 아래 코드 불필요
+//    @Before
+//    public void setup() throws Exception {
+//        MockitoAnnotations.initMocks(this);
+//    }
 
     @Test
     public void t01_verify() throws Exception {
@@ -49,6 +55,20 @@ public class MockitoStudy {
         System.out.println(mockedList.get(0));
 
         verify(mockedList).get(0);
+        verify(mockedList, times(1)).get(0);
+
+        // consecutive stubbing
+        String[] strings = {"get 0", "get 1", "get 2", "get 3"};
+        when(mockedList.get(anyInt())).thenReturn(strings);
+
+        System.out.println(mockedList.get(anyInt()));
+        System.out.println(mockedList.get(anyInt()));
+        System.out.println(mockedList.get(anyInt()));
+        System.out.println(mockedList.get(anyInt()));
+        System.out.println(mockedList.get(anyInt()));
+
+        // 앞에서 verify 했더라도 호출회수는 전체 호출회수로 검증
+        verify(mockedList, times(6)).get(anyInt());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -80,5 +100,28 @@ public class MockitoStudy {
         // 호출 내용이 stubbing 되지는 않았지만
         // mockedList는 mock 된 객체이므로 행위자체는 기록되어 verify 성공
         verify(mockedList).get(999);
+    }
+
+    @Test
+    public void t06_verificatino_in_order() throws Exception {
+        // 동일 객체 내의 메서드 호출 순서 검증
+        mockedList.add("first");
+        mockedList.add("second");
+
+        InOrder inOrder = inOrder(mockedList);
+
+        // InOrder 생성 후에도 순서 추적 적용됨
+        mockedList.add("third");
+        inOrder.verify(mockedList).add("first");
+        inOrder.verify(mockedList).add("second");
+        inOrder.verify(mockedList).add("third");
+
+        // 여러 객체의 순서도 검증 가능
+        List tmpList = mock(List.class);
+        InOrder inOrderMultiClass = inOrder(mockedList, tmpList);
+        mockedList.add("FIRST");
+        tmpList.add("LATTER");
+        inOrderMultiClass.verify(mockedList).add("FIRST");
+        inOrderMultiClass.verify(tmpList).add("LATTER");
     }
 }
