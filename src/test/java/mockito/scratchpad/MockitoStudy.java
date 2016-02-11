@@ -124,4 +124,16 @@ public class MockitoStudy {
         inOrderMultiClass.verify(mockedList).add("FIRST");
         inOrderMultiClass.verify(tmpList).add("LATTER");
     }
+
+    @Test
+    public void t07_stubbing_consecutive() throws Exception {
+        when(mockedList.add("element")).thenReturn(true, false);
+
+        System.out.println(mockedList.add("element"));
+        System.out.println(mockedList.add("element"));
+        System.out.println(mockedList.add("element")); // 마지막 return 값 적용
+        System.out.println(mockedList.add("element")); // 마지막 return 값 적용
+
+        verify(mockedList, times(4)).add("element");
+    }
 }
