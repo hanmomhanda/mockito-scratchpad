@@ -5,12 +5,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
@@ -22,11 +25,12 @@ public class MockitoStudy {
     @Mock
     List mockedList;
 
-    // @RunWith(MockitoJUnitRunner.class) 애노테이션 해주면 아래 코드 불필요
-//    @Before
-//    public void setup() throws Exception {
+    // @RunWith(MockitoJUnitRunner.class) 애노테이션 해주면 MockitoAnnotations.initMocks(this) 불필요
+    @Before
+    public void setup() throws Exception {
 //        MockitoAnnotations.initMocks(this);
-//    }
+        mockedList.clear();
+    }
 
     @Test
     public void t01_verify() throws Exception {
@@ -135,5 +139,32 @@ public class MockitoStudy {
         System.out.println(mockedList.add("element")); // 마지막 return 값 적용
 
         verify(mockedList, times(4)).add("element");
+    }
+
+    @Test
+    public void t08_spying_doReturn() throws Exception {
+        List list = new LinkedList<>();
+        List spy = spy(list);
+        assertThat(spy, is(list)); // 같게 나온다.. 뭐지?
+        assertNotEquals(spy, list); // 얘들은 또 다르다..
+
+
+        // spy는 비어있으므로 spy.get(0)을 stubbing 하면 IndexOutOfBoudnsException 발생
+//        when(spy.get(0)).thenReturn(3);
+        // spy.get(0)이 아니라 spy를 stubbing 하면 OK
+        doReturn(3).when(spy).get(0);
+
+        when(spy.size()).thenReturn(100);
+
+        spy.add("one");
+        spy.add("two");
+
+        System.out.println(spy.get(0));
+        System.out.println(spy.size());
+
+        System.out.println(list.size());
+
+        verify(spy).add("one");
+        verify(spy).add("two");
     }
 }
