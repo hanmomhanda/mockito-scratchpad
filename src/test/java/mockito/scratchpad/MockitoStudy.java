@@ -3,6 +3,7 @@ package mockito.scratchpad;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -166,5 +167,32 @@ public class MockitoStudy {
 
         verify(spy).add("one");
         verify(spy).add("two");
+    }
+
+    @Test
+    public void t09_argumentCaptor() throws Exception {
+        class Person {
+            private String name;
+
+            public Person(String name) {
+                this.name = name;
+            }
+
+            public String getName() {
+                return name;
+            }
+        }
+
+        Person aPerson = new Person("John");
+
+        mockedList.add(aPerson);
+
+        ArgumentCaptor<Person> argument = ArgumentCaptor.forClass(Person.class);
+        verify(mockedList).add(argument.capture());
+        System.out.println(aPerson);
+        // 아래와 같이 argument.capture()를 verify나 stubbing 밖에서 사용하면 에러 발생
+//        System.out.println(argument.capture());
+
+        assertEquals("John", argument.getValue().getName());
     }
 }
