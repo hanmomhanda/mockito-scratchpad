@@ -195,4 +195,40 @@ public class MockitoStudy {
 
         assertEquals("John", argument.getValue().getName());
     }
+
+    @Test
+    public void t10_enable_partialMock_without_spy() throws Exception {
+        class Person {
+            private String name;
+            private int height;
+
+            public Person(String name, int height) {
+                this.name = name;
+                this.height = height;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public int getHeight() {
+                return height;
+            }
+
+            public int printSome() {
+                System.out.println("SOME");
+                return -1;
+            }
+        }
+        Person partialMock = mock(Person.class);
+        when(partialMock.printSome()).thenCallRealMethod();
+        when(partialMock.getName()).thenReturn("MOCKED");
+
+        partialMock.printSome();
+        System.out.println(partialMock.getName());
+        System.out.println(partialMock.getHeight());
+
+        verify(partialMock).printSome();
+        verify(partialMock).getName();
+    }
 }
