@@ -11,6 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -230,5 +231,20 @@ public class MockitoStudy {
 
         verify(partialMock).printSome();
         verify(partialMock).getName();
+    }
+
+    @Test
+    public void t11_bdd_style() throws Exception {
+        //given
+        org.mockito.BDDMockito.given(mockedList.size()).willReturn(3);
+
+        //when
+        int length = mockedList.size();
+
+        //then
+        verify(mockedList, never()).add(any());
+        System.out.println(mockedList.size());
+        assertEquals(mockedList.size(), length);
+
     }
 }
