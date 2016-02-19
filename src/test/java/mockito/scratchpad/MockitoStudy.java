@@ -247,4 +247,10 @@ public class MockitoStudy {
         assertEquals(mockedList.size(), length);
 
     }
+
+    @Test
+    public void t12_verify_with_timeout() throws Exception {
+        mockedList.add("1st");
+        verify(mockedList, timeout(1000)).add("1st");
+    }
 }
